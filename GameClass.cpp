@@ -1,61 +1,55 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "shapes.h"
-#include "collision.h"
+#include "Apple.h"
+#include "Square.h"
+#include "Map.h"
+#include "Cell.h"
 #include "GameClass.h"
+#pragma once
 
 GameClass::GameClass() {
-	this->window = new sf::RenderWindow(sf::VideoMode(640, 480), "Circle");
-}
+	this->window = new sf::RenderWindow(sf::VideoMode(640, 480), "Snake");
+	unsigned int speed = 5;
+	enum direction { UP, RIGHT, DOWN, LEFT };
+	int direction = RIGHT;
 
-
-Shapes GameClass::ShapeCreate(float _x, float _y, float _rad) {
-	Shapes shape(window, _x, _y, _rad);
-	return shape;
-}
-
-void GameClass::MoveShape(Shapes& Object1, Shapes& Object2) {
-	int speed = 2;
-	
 	window->setFramerateLimit(speed);
-	Collision collision;
 
+	sf::Event event;
 	while (window->isOpen())
 	{
-		enum direction { UP, RIGHT, DOWN, LEFT };
-		int direction;
 
-
-		sf::Event event;
 		while (window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
 				window->close();
 			}
-		
+
 		}
 
 		window->clear();
-		
-		Object1.move(direction);
-		Object1.update(direction);
-		Object1.draw();
 
-		Object2.draw();
+		_Map.snake.move(direction);
+		_Map.snake.update(direction);
+		_Map.drawSnake(window);
 
-		if (!collision.MapTest(Object1)) {
+		_Map.drawApple(window);
+
+		if (_Map.MapCollision()) {
 			window->close();
 		}
 
-		if (!collision.MapTest(Object2)) {
+		if (_Map.snake.CollisionBody()) {
 			window->close();
 		}
 
-
-		if (collision.CircleTest(Object1, Object2)) {	
-			Object2.update(direction);
+		if (_Map.eatApple()) {
+			_Map.snake.expand();
+			_Map.apple.generate();
+			while (_Map.isCross())
+				_Map.apple.generate();
 		}
-		
+
 		window->display();
 	}
 

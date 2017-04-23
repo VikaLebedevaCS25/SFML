@@ -1,14 +1,13 @@
-#pragma once
 #include <iostream>
 #include <SFML/Graphics.hpp>
-using namespace sf;
+#include "Map.h"
+#pragma once
+
 
 class GameClass {
 public:
 	GameClass();
-	Shapes ShapeCreate(float, float, float);
-	void MoveShape(Shapes& Object1, Shapes& Object2);
 private:
 	sf::RenderWindow* window;
-
+	Map _Map;
 };
